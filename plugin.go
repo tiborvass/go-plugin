@@ -14,12 +14,14 @@ import (
 	"github.com/tiborvass/dl"
 )
 
+// Plugin is a struct that must be embedded in a user-defined Plugin struct.
+// It ensures proper closing of the shared library.
 type Plugin struct {
 	dl *dl.DL
 }
 
-var _plugin = reflect.TypeOf(Plugin{}).Name()
-
+// Close closes the shared library resource.
+// Typically called in a defer statement after Open().
 func (p Plugin) Close() error {
 	if p.dl != nil {
 		return p.dl.Close()
@@ -27,18 +29,22 @@ func (p Plugin) Close() error {
 	return nil
 }
 
+var _plugin = reflect.TypeOf(Plugin{}).Name()
 var nopFn = func([]reflect.Value) []reflect.Value { return nil }
 
+// Open retrieves the symbols defined in plugin, from the shared library at path.
+// path should omit the file extension (e.g. "plugin" instead of "plugin.so").
+// plugin should be a pointer to a struct embedding the Plugin struct.
 func Open(plugin interface{}, path string) error {
 	v := reflect.ValueOf(plugin)
 	t := v.Type()
 	if t.Kind() != reflect.Ptr {
-		return errors.New("plugin needs to be a pointer to a struct")
+		return errors.New("Open expects a plugin to be a pointer to a struct")
 	}
 	v = v.Elem()
 	t = v.Type()
 	if t.Kind() != reflect.Struct {
-		return errors.New("Open expects a plugin of type struct{ interface{ Method() } }")
+		return errors.New("Open expects a plugin to be a pointer to a struct")
 	}
 	lib, err := dl.Open(path, 0)
 	if err != nil {
