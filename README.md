@@ -25,8 +25,8 @@ import "github.com/tiborvass/go-plugin"
 
 type MyPlugin struct {
 	plugin.Plugin
-	Hello()
-	Goodbye()
+	Hello   func()
+	Goodbye func()
 }
 
 func main() {
@@ -59,5 +59,5 @@ Hello from C plugin!
 This is a function implemented only in C
 Goodbye from main
 PASS
-ok  	toto	0.034s
+ok  	plugin	0.034s
 ```
