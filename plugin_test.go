@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestOpen(t *testing.T) {
+func ExampleOpen() {
 	type MyPlugin struct {
 		Plugin
 		HelloWorld func()
@@ -26,4 +26,8 @@ func TestOpen(t *testing.T) {
 		myPlugin.OnlyInGo()
 		myPlugin.OnlyInC()
 	}
+}
+
+func TestOpen(t *testing.T) {
+	ExampleOpen()
 }
